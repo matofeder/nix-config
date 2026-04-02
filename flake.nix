@@ -1,23 +1,29 @@
 {
-  description = "Mato's ThinkCentre Flake";
+  description = "NixOS configuration of Mato";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs: let
-    system = "x86_64-linux";
-  in {
-
+  outputs = inputs @ {
+    self,
+    nixpkgs,
+    ...
+  }: {
     nixosConfigurations = {
-      tc = nixpkgs.lib.nixosSystem {
-        system = system;
-        specialArgs = { inherit inputs; };
+      tc = let
+        username = "mato";
+        specialArgs = {inherit username;};
+      in
+        nixpkgs.lib.nixosSystem {
+          inherit specialArgs;
+          system = "x86_64-linux";
 
-        modules = [
-          ./nixos/configuration.nix
-        ];
-      };
+          modules = [
+            ./hosts/thinkcentre
+            ./users/${username}
+          ];
+        };
     };
   };
 }
