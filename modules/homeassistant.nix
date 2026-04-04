@@ -39,20 +39,24 @@
     ];
     config = {
       http = {
+        base_url = "https://feder-home.duckdns.org";
+        use_x_forwarded_for = true;
+        trusted_proxies = [
+          "127.0.0.1"
+        ];
         server_host = [
-          "::"
-          "0.0.0.0"
+          "127.0.0.1"
         ];
         server_port = 8123;
-        ssl_certificate = "/etc/letsencrypt/live/mfeder.duckdns.org/fullchain.pem";
-        ssl_key = "/etc/letsencrypt/live/mfeder.duckdns.org/privkey.pem";
+        #ssl_certificate = "/etc/letsencrypt/live/mfeder.duckdns.org/fullchain.pem";
+        #ssl_key = "/etc/letsencrypt/live/mfeder.duckdns.org/privkey.pem";
       };
       homeassistant = {
         unit_system = "metric";
         latitude = 48.2343;   # Pezinok latitude
         longitude = 17.2267;  # Pezinok longitude
-        internal_url = "https://mfeder.duckdns.org:8123";
-        external_url = "https://mfeder.duckdns.org:8123";
+        internal_url = "http://127.0.0.1:8123";
+        external_url = "https://feder-home.duckdns.org";
       };
       recorder = {
         purge_keep_days = 60;

@@ -7,6 +7,7 @@
     ../../modules/base.nix
     ../../modules/gnome.nix
     ../../modules/homeassistant.nix
+    ./caddy.nix
 
     # Include the results of the hardware scan.
     ./hardware-configuration.nix

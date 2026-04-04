@@ -68,9 +68,7 @@
     wget
     htop
     tmux
-    certbot
     dig
-    docker-compose
     tcpdump
   ];
 
