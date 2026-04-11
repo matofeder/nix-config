@@ -98,8 +98,13 @@
               };
             }
           ];
-      };
+      }; 
       default_config = {};
     };
+    lovelaceConfigFile = ./ui-lovelace.yaml;
+    customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+      button-card
+      card-mod
+    ];
   };
 }

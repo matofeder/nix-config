@@ -1,0 +1,361 @@
+button_card_templates:
+  room_card_action_badge:
+    show_name: false
+    show_icon: false
+    styles:
+      card:
+        - position: absolute
+        - top: '-42px'
+        - right: '-8px'
+        - z-index: 2
+        - width: 20px
+        - height: 20px
+        - background: |
+            [[[
+              switch(variables.type) {
+                case 'success': return '#22c55e';  // bg-green-500
+                case 'info': return '#3b82f6';     // bg-blue-500
+                case 'warning': return '#f97316';  // bg-orange-500
+                case 'error': return '#ef4444';    // bg-red-500
+                case 'white': return '#FFFFFF';    // white
+                default: return variables.background || 'var(--primary-background-color)';
+              }
+            ]]]
+        - color: |
+            [[[
+              switch(variables.type) {
+                case 'success': return '#ffffff';       // white for green
+                case 'info': return '#ffffff';          // white for blue
+                case 'warning': return '#ffffff';       // black for orange
+                case 'error': return '#ffffff';         // white for red
+                default: return variables.color || 'var(--primary-color)'; // fallback to HA primary color
+              }
+            ]]]
+        - font-weight: 600
+        - font-size: 75%
+        - pointer-events: none
+        - display: |
+            [[[
+              if (variables.display !== undefined) {
+                return variables.display === true ? "flex" : "none";
+              }
+              return variables.value || variables.icon ? "flex" : "none";
+            ]]]
+        - box-shadow: var(--ha-card-box-shadow)
+      custom_fields:
+        badge_content:
+          - position: absolute
+          - width: 100%
+          - height: 100%
+          - display: flex
+          - align-items: center
+          - justify-content: center
+          - line-height: 0
+    custom_fields:
+      badge_content: |
+        [[[
+          if (variables.icon) {
+            return `<ha-icon icon='${variables.icon}' style='height:70%;width: 70%'></ha-icon>`;
+          }
+          return variables.value || '';
+        ]]]
+  room_card_action:
+    show_name: false
+    styles:
+      card:
+        - width: 36px
+        - height: 36px
+        - position: relative
+        - font-weight: bold
+        - font-size: 11px
+        - overflow: |
+            [[[
+              if (variables.badge_display !== undefined) {
+                return variables.badge_display ? "visible" : "hidden";
+              }
+              return variables.badge_value || variables.badge_icon ? "visible" : "hidden";
+            ]]]
+        - border-radius: 100%
+      icon:
+        - width: 20px
+    card_mod:
+      style: |
+        ha-ripple {
+          border-radius: 100%;
+        }
+    custom_fields:
+      badge:
+        card:
+          type: custom:button-card
+          template: room_card_action_badge
+          variables: |
+            [[[
+              return {
+                type: variables.badge_type,
+                value: variables.badge_value,
+                icon: variables.badge_icon,
+                background: variables.badge_background,
+                color: variables.badge_color,
+                display: variables.badge_display
+              };
+            ]]]
+  room_card:
+    show_state: true
+    show_icon: true
+    show_name: true
+    styles:
+      grid:
+        - grid-template-areas: >-
+            "n actions_container" "s actions_container" "sub_state
+            actions_container" "i actions_container"
+        - grid-template-columns: 1fr min-content
+        - grid-template-rows: min-content min-content min-content 1fr
+      card:
+        - padding: 10px
+        - background: var(--card-background-color)
+        - height: 154px
+      custom_fields:
+        actions_container:
+          - background: var(--primary-background-color)
+          - border-radius: 14px
+          - padding: 5px
+          - position: relative
+          - align-self: flex-start
+        sub_state:
+          - justify-self: start
+          - font-size: 12px
+          - font-weight: 400
+          - color: rgba(96, 114, 116, 0.6)
+          - letter-spacing: 0.2px
+          - margin-left: 0px
+          - margin-top: 0.5px
+      name:
+        - justify-self: start
+        - font-size: 19px
+        - font-weight: 600
+        - color: var(--primary-color)
+      state:
+        - justify-self: start
+        - font-size: 14px
+        - font-weight: 600
+        - color: rgba(96,114,116,0.85)
+      img_cell:
+        - position: absolute
+        - width: 110px
+        - height: 110px
+        - left: '-20px'
+        - bottom: '-20px'
+        - border-radius: 100%
+        - background: '[[[ return variables.img_bg || "#b8e6fe"; ]]]'
+      icon:
+        - width: 60px
+        - opacity: '0.8'
+        - color: '[[[ return variables.icon_color || "#00598a"; ]]]'
+    custom_fields:
+      actions_container:
+        card:
+          type: horizontal-stack
+          cards: |
+            [[[
+              const columns = variables.actions_columns ?? [];
+
+              const setRoomCardActionTemplate = (actionButton) => {
+                if (actionButton.type !== 'custom:button-card') { 
+                  return actionButton;
+                }
+                actionButton.template = 'room_card_action';
+                return actionButton;
+              };
+
+              return columns.map(col => ({
+                type: 'vertical-stack',
+                cards: (Array.isArray(col) ? col : []).map(setRoomCardActionTemplate),
+              }));
+            ]]]
+      sub_state: |
+        [[[ return variables.sub_state || ''; ]]]
+views:
+  - title: Home
+    sections:
+      - type: custom:button-card
+        template: room_card
+        name: Living Room
+        icon: mdi:sofa-outline
+        state_display: |
+          [[[ 
+            const temp = parseFloat(states['sensor.timmerflotte_temp_hmd_sensor_temperature']?.state).toFixed(1);
+            const hum = Math.round(states['sensor.timmerflotte_temp_hmd_sensor_humidity']?.state);
+            return `${temp}°C / ${hum}%`;
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /feder-home/areas-living_room
+        variables:
+          img_bg: '#dcfce7'
+          icon_color: '#15803d'
+          actions_columns:
+            - - type: custom:button-card
+                template: room_card_action
+                icon: mdi:temperature-celsius
+                entity: sensor.timmerflotte_temp_hmd_sensor_temperature
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:water-percent
+                entity: sensor.timmerflotte_temp_hmd_sensor_humidity
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: |
+                  [[[
+                    const e = states['binary_sensor.myggspray_wrlss_mtn_sensor_occupancy'];
+                    return e?.state === 'on'
+                      ? 'mdi:motion-sensor'
+                      : 'mdi:motion-sensor-off';
+                  ]]]
+                styles:
+                  icon:
+                    - color: |
+                        [[[
+                          const e = states['binary_sensor.myggspray_wrlss_mtn_sensor_occupancy'];
+                          return e?.state === 'on'
+                            ? '#ef4444'   // red when motion
+                            : '#64748b';  // gray when idle
+                        ]]]
+                entity: binary_sensor.myggspray_wrlss_mtn_sensor_occupancy
+                tap_action:
+                  action: more-info
+      - type: custom:button-card
+        template: room_card
+        name: Kids Room
+        icon: mdi:google-downasaur
+        state_display: |
+          [[[ 
+            const temp = parseFloat(states['sensor.alpstuga_air_quality_monitor_temperature_2']?.state).toFixed(1);
+            const hum = Math.round(states['sensor.alpstuga_air_quality_monitor_humidity_2']?.state);
+            const pm25 = Math.round(states['sensor.alpstuga_air_quality_monitor_pm2_5_2']?.state);
+            const co2 = Math.round(states['sensor.alpstuga_air_quality_monitor_carbon_dioxide_2']?.state);
+            return `${temp}°C / ${hum}% / ${pm25}µg/m³ / ${co2}ppm`;
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /feder-home/areas-kids
+        variables:
+          img_bg: '#ede9fe'
+          icon_color: '#6d28d9'
+          actions_columns:
+            - - type: custom:button-card
+                template: room_card_action
+                icon: mdi:temperature-celsius
+                entity: sensor.alpstuga_air_quality_monitor_temperature_2
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:water-percent
+                entity: sensor.alpstuga_air_quality_monitor_humidity_2
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:molecule-co2
+                entity: sensor.alpstuga_air_quality_monitor_humidity_2
+                tap_action:
+                  action: more-info
+      - type: custom:button-card
+        template: room_card
+        name: Bedroom
+        icon: mdi:bed-king-outline
+        state_display: |
+          [[[ 
+            const temp = parseFloat(states['sensor.alpstuga_air_quality_monitor_temperature']?.state).toFixed(1);
+            const hum = Math.round(states['sensor.alpstuga_air_quality_monitor_humidity']?.state);
+            const pm25 = Math.round(states['sensor.alpstuga_air_quality_monitor_pm2_5']?.state);
+            const co2 = Math.round(states['sensor.alpstuga_air_quality_monitor_carbon_dioxide']?.state);
+            return `${temp}°C / ${hum}% / ${pm25}µg/m³ / ${co2}ppm`;
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /feder-home/areas-bedroom
+        variables:
+          img_bg: '#bfdbfe'
+          icon_color: '#2563eb'
+          actions_columns:
+            - - type: custom:button-card
+                template: room_card_action
+                entity: light.kajplats_e14_ws_globe_806lm
+                icon: mdi:ceiling-light-outline
+                tap_action:
+                  action: toggle
+            - - type: custom:button-card
+                template: room_card_action
+                icon: mdi:temperature-celsius
+                entity: sensor.alpstuga_air_quality_monitor_temperature
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:water-percent
+                entity: sensor.alpstuga_air_quality_monitor_humidity
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:molecule-co2
+                entity: sensor.alpstuga_air_quality_monitor_humidity
+                tap_action:
+                  action: more-info
+      - type: custom:button-card
+        template: room_card
+        name: Hallway
+        icon: mdi:shoe-sneaker
+        tap_action:
+          action: navigate
+          navigation_path: /feder-home/areas-hallway
+        variables:
+          img_bg: '#ffedd5'
+          icon_color: '#f97316'
+          actions_columns:
+            - - type: custom:button-card
+                template: room_card_action
+                entity: switch.wifi_smart_switch
+                icon: mdi:ceiling-light-outline
+                tap_action:
+                  action: toggle
+      - type: custom:button-card
+        template: room_card
+        name: Kitchen
+        icon: mdi:pot-steam-outline
+        state_display: |
+          [[[ 
+            const temp = parseFloat(states['sensor.timmerflotte_temp_hmd_sensor_temperature_2']?.state).toFixed(1);
+            const hum = Math.round(states['sensor.timmerflotte_temp_hmd_sensor_humidity_2']?.state);
+            return `${temp}°C / ${hum}%`;
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: /feder-home/areas-kitchen
+        variables:
+          img_bg: '#fff3b0'
+          icon_color: '#ca8a04'
+          actions_columns:
+            - - type: custom:button-card
+                template: room_card_action
+                icon: mdi:temperature-celsius
+                entity: sensor.timmerflotte_temp_hmd_sensor_temperature_2
+                tap_action:
+                  action: more-info
+              - type: custom:button-card
+                template: room_card_action
+                icon: mdi:water-percent
+                entity: sensor.timmerflotte_temp_hmd_sensor_humidity_2
+                tap_action:
+                  action: more-info
+    header:
+      card:
+        type: markdown
+        content: '## 🏡 Hello {{ user }} - smart home is online 🏡'
+        text_only: true
+

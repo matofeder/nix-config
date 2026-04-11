@@ -6,7 +6,7 @@
   imports = [
     ../../modules/base.nix
     ../../modules/gnome.nix
-    ../../modules/homeassistant.nix
+    ../../modules/haas/homeassistant.nix
     ./caddy.nix
 
     # Include the results of the hardware scan.
