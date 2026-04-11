@@ -1,0 +1,15 @@
+---
+alias: Night mode air sensors
+description: ""
+mode: single
+triggers:
+  - trigger: time
+    at: "21:00:00"
+conditions: []
+actions:
+  - action: switch.turn_off
+    metadata: {}
+    data: {}
+    target:
+      label_id:
+        - air

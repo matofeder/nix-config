@@ -12,7 +12,9 @@
   # Add automation file
   # https://wiki.nixos.org/wiki/Home_Assistant
   systemd.tmpfiles.rules = [
-    "L+ ${config.services.home-assistant.configDir}/automations.yaml - - - - ${./automations.yaml}"
+    "L+ ${config.services.home-assistant.configDir}/automation_hallway_light.yaml - - - - ${./automation_hallway_light.yaml}"
+    "L+ ${config.services.home-assistant.configDir}/automation_air_off_light.yaml - - - - ${./automation_air_off_light.yaml}"
+    "L+ ${config.services.home-assistant.configDir}/automation_air_on_light.yaml - - - - ${./automation_air_on_light.yaml}"
   ];
   # HomeAssistant
   # https://smlight.tech/support/manuals/books/slzb-06xmrxmrxuultima-series/page/thread-setup-network-and-usb-connection#otbr
@@ -68,7 +70,9 @@
         purge_keep_days = 60;
       };
       # Automations
-      "automation ui" = "!include automations.yaml"; 
+      "automation hallway" = "!include automation_hallway_light.yaml"; 
+      "automation air off" = "!include automation_air_off_light.yaml"; 
+      "automation air on" = "!include automation_air_on_light.yaml"; 
       default_config = {};
     };
     lovelaceConfigFile = ./lovelace.yaml;

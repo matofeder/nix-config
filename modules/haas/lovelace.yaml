@@ -261,7 +261,7 @@ views:
               - type: custom:button-card
                 template: room_card_action
                 icon: mdi:molecule-co2
-                entity: sensor.alpstuga_air_quality_monitor_humidity_2
+                entity: sensor.alpstuga_air_quality_monitor_carbon_dioxide_2
                 tap_action:
                   action: more-info
       - type: custom:button-card
@@ -304,7 +304,7 @@ views:
               - type: custom:button-card
                 template: room_card_action
                 icon: mdi:molecule-co2
-                entity: sensor.alpstuga_air_quality_monitor_humidity
+                entity: sensor.alpstuga_air_quality_monitor_carbon_dioxide
                 tap_action:
                   action: more-info
       - type: custom:button-card

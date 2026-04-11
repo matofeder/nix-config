@@ -1,0 +1,23 @@
+---
+alias: Turn on hallway switch on night
+description: ""
+triggers:
+  - entity_id: binary_sensor.myggspray_wrlss_mtn_sensor_occupancy
+    to: "on"
+    trigger: state
+conditions:
+  - condition: time
+    after: "23:30:00"
+    before: "06:00:00"
+  - condition: numeric_state
+    entity_id: sensor.myggspray_wrlss_mtn_sensor_illuminance
+    below: 20
+actions:
+  - target:
+      entity_id: switch.wifi_smart_switch
+    action: switch.turn_on
+  - delay: "00:00:30"
+  - target:
+      entity_id: switch.wifi_smart_switch
+    action: switch.turn_off
+
