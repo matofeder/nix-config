@@ -1,0 +1,23 @@
+alias: Zapnutie svetla pri pohybe v noci
+description: >-
+  Zapne svetlo na 30% pri detekcii pohybu medzi 21:00 a 06:00 a po 3 minútach ho
+  vypne
+triggers:
+  - entity_id: binary_sensor.myggspray_wrlss_mtn_sensor_occupancy
+    to: "on"
+    trigger: state
+conditions:
+  - after: "21:00:00"
+    before: "06:00:00"
+    condition: time
+actions:
+  - data:
+      brightness_pct: 50
+    target:
+      entity_id: light.kajplats_e14_ws_globe_806lm
+    action: light.turn_on
+  - delay: "00:00:30"
+  - target:
+      entity_id: light.kajplats_e14_ws_globe_806lm
+    action: light.turn_off
+

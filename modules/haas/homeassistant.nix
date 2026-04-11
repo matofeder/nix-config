@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }:
 {
@@ -8,6 +9,11 @@
   services.matter-server = {
     enable = true;
   };
+  # Add automation file
+  # https://wiki.nixos.org/wiki/Home_Assistant
+  systemd.tmpfiles.rules = [
+    "L+ ${config.services.home-assistant.configDir}/automations.yaml - - - - ${./automations.yaml}"
+  ];
   # HomeAssistant
   # https://smlight.tech/support/manuals/books/slzb-06xmrxmrxuultima-series/page/thread-setup-network-and-usb-connection#otbr
   services.home-assistant = {
@@ -61,47 +67,11 @@
       recorder = {
         purge_keep_days = 60;
       };
-      "automation lights" = {
-         alias = "Zapnutie svetla pri pohybe v noci";
-         description = "Zapne svetlo na 30% pri detekcii pohybu medzi 21:00 a 06:00 a po 3 minútach ho vypne";
-         trigger = [
-           {
-             platform = "state";
-             entity_id = "binary_sensor.myggspray_wrlss_mtn_sensor_occupancy";
-             to = "on";
-           }
-         ];
-         condition = [
-           {
-             condition = "time";
-             after = "21:00:00";
-             before = "06:00:00";
-           }
-         ];
-         action = [
-           {
-             service = "light.turn_on";
-             target = {
-               entity_id = "light.kajplats_e14_ws_globe_806lm";
-             };
-             data = {
-               brightness_pct = 50;
-             };
-            }
-            {
-              delay = "00:00:30";
-            }
-            {
-              service = "light.turn_off";
-              target = {
-                entity_id = "light.kajplats_e14_ws_globe_806lm";
-              };
-            }
-          ];
-      }; 
+      # Automations
+      "automation ui" = "!include automations.yaml"; 
       default_config = {};
     };
-    lovelaceConfigFile = ./ui-lovelace.yaml;
+    lovelaceConfigFile = ./lovelace.yaml;
     customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
       button-card
       card-mod
