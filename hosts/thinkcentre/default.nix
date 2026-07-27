@@ -83,12 +83,12 @@
   };
 
   # Disable suspend
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=no
-    AllowHibernation=no
-    AllowSuspendThenHibernate=no
-    AllowHybridSleep=no
-  '';
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = false;
+    AllowHibernation = false;
+    AllowSuspendThenHibernate = false;
+    AllowHybridSleep = false;
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
