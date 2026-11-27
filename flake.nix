@@ -2,7 +2,7 @@
   description = "NixOS configuration of Mato";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.11";
   };
 
   outputs = inputs @ {
